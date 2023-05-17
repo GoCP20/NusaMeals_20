@@ -1,13 +1,6 @@
 package main
 
-import (
-	"mini-project/config"
-	route "mini-project/routes"
-	"mini-project/util"
-
-	"github.com/go-playground/validator/v10"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
-)
+import "github.com/go-playground/validator"
 
 func init() {
 	config.InitDB()
