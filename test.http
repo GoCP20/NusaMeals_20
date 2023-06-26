@@ -1,0 +1,64 @@
+### Register User
+POST http://localhost:8080/admin/register
+Content-Type: application/json
+
+{
+  "name": "Administrator",
+  "username": "admin1",
+  "email": "admin1@test.com",
+  "password": "password123",
+  "retype_password": "password123"
+}
+
+### Register User
+POST http://localhost:8080/register
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "username": "johndoe",
+  "email": "johndoe@test.com",
+  "password": "password123",
+  "retype_password": "password123"
+}
+
+### Login User
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+  "username": "johndoe",
+  "password": "password123"
+}
+
+### Login Admin
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+
+
+### Get All User ADMIN
+GET http://localhost:8080/users
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+### Get User By Id USER
+GET http://localhost:8080/users/1
+Content-Type: application/json
+Authorization: Bearer
+
+
+### Create Product Should Role Admin
+POST http://localhost:8080/products
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE2ODU4ODUxNTR9.VwJaVjG3o-4T5fZ2_4Rv6ZcLrvh4bgC-HXH2-KQE70c
+
+{
+  "name": "Sushi",
+  "stock": 10,
+  "type": "makanan"
+}
