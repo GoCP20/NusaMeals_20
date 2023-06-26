@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  api:
+    container_name: apk
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - 80:8080
+    environment:
+      - DB_NAME=users
+      - DB_USERNAME=yuto
+      - DB_PASSWORD=yuni260200
+      - DB_PORT=3306
+      - DB_HOST=nusameals.cenwmkyknvwe.us-east-1.rds.amazonaws.com
+    networks:
+      - api_server
+
+networks:
+  api_server:
+    name: api_server
