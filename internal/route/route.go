@@ -65,4 +65,26 @@ func (cfg *Config) New() {
 	admin.GET("/users/email", userController.GetUserByEmail)
 	admin.PUT("/users/:id", userController.UpdateUser)
 
+	// CATEGORY
+	categoryController := controller.NewCategoryController(categoryUseCase)
+	categoryRoutes := cfg.Echo.Group("/category")
+	categoryRoutes.POST("", categoryController.CreateCategoryController, authMiddleware.IsAdmin)
+	categoryRoutes.GET("", categoryController.GetCategoriesController)
+	categoryRoutes.GET("/id", categoryController.GetMenusByCategoryIDController)
+	categoryRoutes.GET("/menu", categoryController.GetMenusByCategoryNameController)
+	categoryRoutes.PUT("/:id", categoryController.UpdateCategoryController, authMiddleware.IsAdmin)
+	categoryRoutes.DELETE("/:id", categoryController.DeleteCategoryController, authMiddleware.IsAdmin)
+
+	// MENUS
+	menuController := controller.NewMenuController(menuUseCase)
+	menuRoutes := cfg.Echo.Group("/menus")
+	menuRoutes.GET("", menuController.GetAllMenusController)
+	menuRoutes.GET("/:id", menuController.GetMenuController)
+	menuRoutes.GET("/name", menuController.GetMenusByNameController)
+	menuRoutes.GET("/category", menuController.GetMenusByCategoryController)
+	menuRoutes.GET("/category/name", menuController.GetMenusByCategoryNameController)
+	menuRoutes.POST("", menuController.CreateMenuController, authMiddleware.IsAdmin)
+	menuRoutes.PUT("/:id", menuController.UpdateMenuController, authMiddleware.IsAdmin)
+	menuRoutes.DELETE("/:id", menuController.DeleteMenuController, authMiddleware.IsAdmin)
+
 }
