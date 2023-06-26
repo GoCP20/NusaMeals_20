@@ -87,6 +87,18 @@ func (cfg *Config) New() {
 	menuRoutes.PUT("/:id", menuController.UpdateMenuController, authMiddleware.IsAdmin)    //bisa
 	menuRoutes.DELETE("/:id", menuController.DeleteMenuController, authMiddleware.IsAdmin) //bisa
 
+	//PAYMENT
+	paymentController := controller.NewPaymentController(paymentUseCase)
+	paymentRoutes := cfg.Echo.Group("/payments", authMiddleware.IsAuthenticated())
+	paymentRoutes.POST("", paymentController.CreatePayment)                                              //bisa
+	paymentRoutes.PUT("/:id", paymentController.UpdatePayment)                                           //bisa
+	paymentRoutes.GET("/details/:id", paymentController.GetPaymentByID)                                  //bisa
+	paymentRoutes.PUT("/details/update", paymentController.UpdatePaymentByAdmin, authMiddleware.IsAdmin) //bisa
+	paymentRoutes.DELETE("/:id", paymentController.DeletePayment)                                        //bisa
+	paymentRoutes.GET("", paymentController.GetAllPayments)                                              //bisa
+	paymentRoutes.GET("/details/orders", paymentController.GetPaymentByOrderID)                          //bisa
+	paymentRoutes.GET("/details/payment", paymentController.GetPaymentByUsername)
+
 	//ORDER
 	orderController := controller.NewOrderController(orderUseCase)
 	orderRoutes := cfg.Echo.Group("/orders", authMiddleware.IsAuthenticated())
@@ -96,5 +108,14 @@ func (cfg *Config) New() {
 	orderRoutes.DELETE("/:orderID", orderController.DeleteOrder, authMiddleware.IsAdmin)
 	orderRoutes.GET("/order-details/user/:userID", orderController.GetOrdersByUserID, authMiddleware.IsAuthenticated())
 	orderRoutes.GET("", orderController.GetAllOrders)
+
+	// TABLE
+	tableController := controller.NewTableController(tableUseCase)
+	tableRoutes := cfg.Echo.Group("/tables", authMiddleware.IsAuthenticated())
+	tableRoutes.POST("", tableController.AddTable, authMiddleware.IsAdmin)
+	tableRoutes.PUT("/:id", tableController.UpdateTable, authMiddleware.IsAdmin)
+	tableRoutes.DELETE("/:id", tableController.DeleteTable, authMiddleware.IsAdmin)
+	tableRoutes.GET("/:id", tableController.GetTableByID)
+	tableRoutes.GET("", tableController.GetAllTables)
 
 }
