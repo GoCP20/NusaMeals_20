@@ -87,18 +87,6 @@ func (cfg *Config) New() {
 	menuRoutes.PUT("/:id", menuController.UpdateMenuController, authMiddleware.IsAdmin)    //bisa
 	menuRoutes.DELETE("/:id", menuController.DeleteMenuController, authMiddleware.IsAdmin) //bisa
 
-	//PAYMENT
-	paymentController := controller.NewPaymentController(paymentUseCase)
-	paymentRoutes := cfg.Echo.Group("/payments", authMiddleware.IsAuthenticated())
-	paymentRoutes.POST("", paymentController.CreatePayment)                                              //bisa
-	paymentRoutes.PUT("/:id", paymentController.UpdatePayment)                                           //bisa
-	paymentRoutes.GET("/details/:id", paymentController.GetPaymentByID)                                  //bisa
-	paymentRoutes.PUT("/details/update", paymentController.UpdatePaymentByAdmin, authMiddleware.IsAdmin) //bisa
-	paymentRoutes.DELETE("/:id", paymentController.DeletePayment)                                        //bisa
-	paymentRoutes.GET("", paymentController.GetAllPayments)                                              //bisa
-	paymentRoutes.GET("/details/orders", paymentController.GetPaymentByOrderID)                          //bisa
-	paymentRoutes.GET("/details/payment", paymentController.GetPaymentByUsername)
-
 	//ORDER
 	orderController := controller.NewOrderController(orderUseCase)
 	orderRoutes := cfg.Echo.Group("/orders", authMiddleware.IsAuthenticated())
