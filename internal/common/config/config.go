@@ -50,8 +50,10 @@ func InitialMigration() {
 		&model.User{},
 		&model.Menu{},
 		&model.Category{},
+		&model.Payment{},
 		&model.Order{},
-
+		&model.Table{},
+		&model.Reservation{},
 	)
 
 }

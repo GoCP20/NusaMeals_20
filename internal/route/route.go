@@ -25,16 +25,19 @@ func (cfg *Config) New() {
 	userRepository := repository.NewUserRepository(cfg.DBConn)
 	categoryRepository := repository.NewCategoryRepository(cfg.DBConn)
 	menuRepository := repository.NewMenuRepository(cfg.DBConn)
+	paymentRepository := repository.NewPaymentRepository(cfg.DBConn)
 	orderRepository := repository.NewOrderRepository(cfg.DBConn)
-	
+	tableRepository := repository.NewTableRepository(cfg.DBConn)
+	reservationRepository := repository.NewReservationRepository(cfg.DBConn)
 	//orderDetailRepository := repository.NewOrderDetailRepository(cfg.DBConn)
 
 	userUseCase := usecase.NewUserUseCase(userRepository, cfg.JwtProvider)
 	categoryUseCase := usecase.NewCategoryUseCase(categoryRepository, menuRepository)
 	menuUseCase := usecase.NewMenuUseCase(menuRepository)
+	paymentUseCase := usecase.NewPaymentUseCase(paymentRepository, orderRepository, userRepository)
 	orderUseCase := usecase.NewOrderUseCase(orderRepository, userRepository, menuRepository)
-
-	//orderDetailUseCase := usecase.NewOrderDetailUseCase(orderDetailRepository)
+	tableUseCase := usecase.NewTableUseCase(tableRepository)
+	reservationUseCase := usecase.NewReservationUseCase(reservationRepository)
 
 	// Routes
 
@@ -85,8 +88,67 @@ func (cfg *Config) New() {
 	menuRoutes.PUT("/:id", menuController.UpdateMenuController, authMiddleware.IsAdmin)    //bisa
 	menuRoutes.DELETE("/:id", menuController.DeleteMenuController, authMiddleware.IsAdmin) //bisa
 
+	//PAYMENT
+	paymentController := controller.NewPaymentController(paymentUseCase)
+	paymentRoutes := cfg.Echo.Group("/payments", authMiddleware.IsAuthenticated())
+	paymentRoutes.POST("", paymentController.CreatePayment)     //bisa
+	paymentRoutes.PUT("/:id", paymentController.UpdatePayment)  //untested
+	paymentRoutes.GET("/:id", paymentController.GetPaymentByID) //bisa
 
-	
+	paymentRoutes.PUT("/admin/:id", paymentController.UpdatePaymentByAdmin, authMiddleware.IsAdmin) //bisa
+	paymentRoutes.DELETE("/:id", paymentController.DeletePayment)                                   //bisa
+	paymentRoutes.GET("", paymentController.GetAllPayments)                                         //bisa
+	paymentRoutes.GET("/orders", paymentController.GetPaymentByOrderID)                             //bisa
+	paymentRoutes.GET("/username", paymentController.GetPaymentByUsername)
 
+	// paymentController := controller.NewPaymentController(paymentUseCase)
+	// paymentRoutes := cfg.Echo.Group("/payments", authMiddleware.IsAuthenticated())
+	// paymentRoutes.POST("", paymentController.CreatePayment)                                              //bisa
+	// paymentRoutes.PUT("/:id", paymentController.UpdatePayment)                                           //bisa
+	// paymentRoutes.GET("/details/:id", paymentController.GetPaymentByID)                                  //bisa
+	// paymentRoutes.PUT("/details/update", paymentController.UpdatePaymentByAdmin, authMiddleware.IsAdmin) //bisa
+	// paymentRoutes.DELETE("/:id", paymentController.DeletePayment)                                        //bisa
+	// paymentRoutes.GET("", paymentController.GetAllPayments)                                              //bisa
+	// paymentRoutes.GET("/details/orders", paymentController.GetPaymentByOrderID)                          //bisa
+	// paymentRoutes.GET("/details/payment", paymentController.GetPaymentByUsername)
+
+	//ORDER
+	orderController := controller.NewOrderController(orderUseCase)
+	orderRoutes := cfg.Echo.Group("/orders", authMiddleware.IsAuthenticated())
+	orderRoutes.POST("", orderController.CreateOrder)
+	orderRoutes.GET("/order-details/:orderID", orderController.GetOrderByID)
+	orderRoutes.PUT("/:orderID", orderController.UpdateOrderStatus, authMiddleware.IsAdmin)
+	orderRoutes.DELETE("/:orderID", orderController.DeleteOrder, authMiddleware.IsAdmin)
+	orderRoutes.GET("/order-details/user/:userID", orderController.GetOrdersByUserID, authMiddleware.IsAuthenticated())
+	orderRoutes.GET("", orderController.GetAllOrders)
+
+	// orderController := controller.NewOrderController(orderUseCase)
+	// orderRoutes := cfg.Echo.Group("/orders", authMiddleware.IsAuthenticated())
+	// orderRoutes.POST("", orderController.CreateOrder)
+	// orderRoutes.GET("/order-details/:orderID", orderController.GetOrderByID)
+	// orderRoutes.PUT("/:orderID", orderController.UpdateOrderStatus, authMiddleware.IsAdmin)
+	// orderRoutes.DELETE("/:orderID", orderController.DeleteOrder, authMiddleware.IsAdmin)
+	// orderRoutes.GET("/order-details/user/:userID", orderController.GetOrdersByUserID, authMiddleware.IsAuthenticated())
+	// orderRoutes.GET("", orderController.GetAllOrders)
+
+	// TABLE
+	tableController := controller.NewTableController(tableUseCase)
+	tableRoutes := cfg.Echo.Group("/tables", authMiddleware.IsAuthenticated())
+	tableRoutes.POST("", tableController.AddTable, authMiddleware.IsAdmin)
+	tableRoutes.PUT("/:id", tableController.UpdateTable, authMiddleware.IsAdmin)
+	tableRoutes.DELETE("/:id", tableController.DeleteTable, authMiddleware.IsAdmin)
+	tableRoutes.GET("/:id", tableController.GetTableByID)
+	tableRoutes.GET("", tableController.GetAllTables)
+
+	//RESERVATION
+
+	reservationController := controller.NewReservationController(reservationUseCase)
+	reservationRoutes := cfg.Echo.Group("/reservations", authMiddleware.IsAuthenticated())
+	reservationRoutes.POST("", reservationController.MakeReservation)
+	reservationRoutes.PUT("/:id", reservationController.UpdateReservation)
+	reservationRoutes.DELETE("/:id", reservationController.CancelReservation)
+	reservationRoutes.GET("/:id", reservationController.GetReservationByID)
+	reservationRoutes.GET("/reservation", reservationController.GetReservationByName)
+	reservationRoutes.GET("/all", reservationController.GetAllReservations, authMiddleware.IsAdmin)
 
 }
